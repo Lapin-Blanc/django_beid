@@ -1,0 +1,59 @@
+{% extends "admin/change_form.html" %}
+
+{% load i18n admin_urls%}
+{% load staticfiles %}
+
+{% block extrahead %}
+{{ block.super }}
+<!-- Custom Javascript for Beid -->
+<script type="text/javascript" src="{% static 'js/beid.js' %}"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+    function MAJCarte() {
+        var EA = document.applets['BeidApplet'];
+        EA.updateCardFromJS();
+        document.getElementById('id_num_nat').value = EA.getNationalNumber();
+        document.getElementById('id_nom').value = EA.getName();
+        document.getElementById('id_prenoms').value = EA.getFirstname() + " " + EA.getThirdFirstnameInitial();
+        document.getElementById('id_date_naissance').value = convert_beid_date(EA.getBirthDate());
+        document.getElementById('id_lieu_naissance').value = EA.getBirthLocation();
+        document.getElementById('id_nationalite').value = EA.getNationality();
+        document.getElementById('id_sexe').value = EA.getSex();
+
+        document.getElementById('id_num_carte').value = EA.getCardNumber();
+        document.getElementById('id_debut_val').value = convert_beid_date(EA.getValidityBeginDate());
+        document.getElementById('id_fin_val').value = convert_beid_date(EA.getValidityEndDate());
+        document.getElementById('id_commune_del').value = EA.getDeliveryMunicipality();
+
+        document.getElementById('id_adresse').value = EA.getStreetAndNumber();
+        document.getElementById('id_code_postal').value = EA.getZipCode();
+        document.getElementById('id_commune').value = EA.getMunicipality();
+    }
+    function MAJPhoto() {
+        var EA = document.applets['BeidApplet'];
+        EA.updateCardFromJS();
+        document.getElementById('img_div_id').innerHTML = "<img src=\"data:image/jpeg;base64," + EA.getPictureBase64() + "\">";
+        document.getElementById('id_photo').value = EA.getPictureBase64();
+    }
+    $(document).ready(function(){
+        if ( $('#id_photo').val() ) {
+            document.getElementById('img_div_id').innerHTML = "<img src=\"data:image/jpeg;base64," + $('#id_photo').val() + "\">";
+        };
+        $("fieldset:last").css('display', 'none');
+        {% if not original.id %}
+        $("#PrintBarcode").css('display', 'none');
+        {% endif %}
+    });
+//-->
+</script>
+
+{% endblock %}
+
+
+{% block object-tools %}
+<applet archive="{% static 'FabienBeidApplet.jar'%}" code="be.toune.fabien.beid.util.BeidApplet.class" height="0" width="0" name="BeidApplet"></applet>
+<div id="img_div_id" style="float:right;width:140px;height:200px;background-color:#CCC;margin:40px 20px;"></div>
+<input type="button" onclick="MAJCarte(); MAJPhoto();" value="Lire Carte d'identit&eacute;" id="ReadBeid" style="margin:10px;"/>
+{{ block.super }}
+{% endblock %}
